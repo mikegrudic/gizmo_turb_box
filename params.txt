@@ -1,0 +1,100 @@
+InitCondFile                BOX_M1e4_L10_B10_N100000      % IC file
+OutputDir                   output     % name (full path or sub-folder name) for outputs
+
+%---- File formats (input and output)
+ICFormat                    3   % format of IC file: 1=unformatted (gadget) binary, 3=hdf5, 4=cluster
+SnapFormat                  3   % format of snapshots: 1=unformatted (gadget) binary, 3=hdf5 [Default=3]
+
+%---- Output parameters
+RestartFile                 restart    % base name for restartfiles [Default='restart']
+SnapshotFileBase            snapshot   % base name for snapshot files [Default='snapshot']
+OutputListOn                0   % =1 to use list in "OutputListFilename", =0 to specify
+OutputListFilename          output_times.txt   % list of times (in code units) for snaps if OutputListOn=1
+NumFilesPerSnapshot         1   % number of sub-files to break each snapshot into [Default=1]
+NumFilesWrittenInParallel   1   % must be < N_processors & power of 2 [Default=1]
+
+%---- Output frequency
+TimeOfFirstSnapshot         0   % time (code units) of first snapshot
+TimeBetSnapshot             1.   % time between snapshot writes (if OutputListOn=0), code units
+TimeBetStatistics           0.05  % code time between additional statistics (e.g. energy) [Default=infinity]
+
+%---- CPU run-time and checkpointing time-limits
+TimeLimitCPU                100000  % wall-clock timelimit for sim in seconds, before self-stop [Default=1 day]
+CpuTimeBetRestartFile       7200  	% wall-clock time between restartfile writes, in seconds [Default=1 hour]
+
+%---- Desired simulation beginning and end times (in code units) for run
+TimeBegin                   0.0    % Code-unit time at the beginning of the simulation
+TimeMax                     100.0     % Code-unit time at the end of the simulation (run will stop)
+
+%---- Maximum and minimum timesteps allowed
+MaxSizeTimestep             1.0   % maximum timestep in code units, set for your problem
+MinSizeTimestep             1.0e-12 % minimum timestep (code units). set this very low, or get the wrong answer [Default=0]
+
+
+%---- System of units. This defines what one 'code unit' is in CGS, so it can be converted for subroutines like cooling, etc.
+UnitLength_in_cm            3.085678e18       % 1 pc
+UnitMass_in_g               1.989e33          % This example code unit is solar masses
+UnitVelocity_in_cm_per_s    1.0e5             % 1 km/sec
+UnitMagneticField_in_gauss  1e-6              % 1 microgauss
+GravityConstantInternal     0                 % Set the value of 'G' in code units, if desired. calculated by code if =0 [Default=0]
+
+%---- Cosmological parameters
+ComovingIntegrationOn        0       % is the simulation a cosmological integration? (yes=1, no=0)
+BoxSize                      10.  % box side-length in code units. irrelevant for open boxes. see user guide for custom box shapes.
+
+%----- Memory allocation
+MaxMemSize                 2500    % sets maximum memory cap per MPI task in MByte (to prevent segfaults/memory overreach)
+PartAllocFactor            3.0     % memory load allowed (ratio of element number to mean) for better cpu balance
+BufferSize                 100     % size of communications buffer per MPI sub-domain, in MByte
+
+%---- Rebuild domains when >this fraction of particles active, set lower to rebuild more frequently
+TreeDomainUpdateFrequency  0.05    % 0.0005-0.05, dept on core+particle number
+
+
+%---- Hydro reconstruction (kernel) parameters
+DesNumNgb                  32      % Cell-reconstruction kernel number: 32-60 standard in 3D, 60-114 for quintic
+MaxHsml                    1.0e10  % minimum gas kernel length (some very large value to prevent errors) [Default=infinity]
+MinGasHsmlFractional       0       % minimum kernel length relative to gas force softening (<= 1) [Default=0]
+%----- adaptive grav softening or other kernel-interactions for non-gas elements
+
+%---- Gravitational softening lengths, in code units
+%----- Softening lengths per element type. If ADAPTIVE_GRAVSOFT is set, these
+%-------- are the minimum softening allowed for each type -------
+%-------- (units are co-moving for cosmological integrations)
+Softening_Type0     1e-10    % element/particle type 0 [gas; this parameter can also be named 'SofteningGas']
+Softening_Type1     0.020    % element type 1 [e.g. high-res dark matter; can also use 'SofteningHalo' here]
+Softening_Type2     0.150    % element type 2 [e.g. dummy collisionless; alt. 'SofteningDisk']
+Softening_Type3     0.500    % element type 3 [e.g. grains/PIC particles; alt. 'SofteningBulge']
+Softening_Type4     0.001    % element type 4 [e.g. stars, in galaxy sims; alt. 'SofteningStars']
+Softening_Type5     0.001    % element type 5 [e.g. black holes/sinks; alt. 'SofteningBndry']
+%
+%--- If these are set in cosmological runs, SofteningX switches from comoving to physical
+%------- units when the comoving value exceeds the choice here
+%------- (these are ignored/do not need to be set, and *only* the above are used, for non-cosmo runs)
+Softening_Type0_MaxPhysLimit    0.0005  % e.g. switch to 0.5pc physical below z=1 [alt. 'SofteningGasMaxPhys']
+Softening_Type1_MaxPhysLimit    0.010   % [alt. 'SofteningHaloMaxPhys']
+Softening_Type2_MaxPhysLimit    0.075   % [alt. 'SofteningDiskMaxPhys']
+Softening_Type3_MaxPhysLimit    0.250   % [alt. 'SofteningBulgeMaxPhys']
+Softening_Type4_MaxPhysLimit    0.0005  % [alt. 'SofteningStarsMaxPhys']
+Softening_Type5_MaxPhysLimit    0.0005  % [alt. 'SofteningBndryMaxPhys']
+%
+%--- (Note: code is compatible with old naming convention: so 'SofteningGas' can be used
+%---  interchangeable with 'Softening_Type0' - just choose one. Likewise 'SofteningHalo' for
+%---  'Softening_Type1', 'SofteningHaloMaxPhys' for 'Softening_Type1_MaxPhysLimit', etc.,
+%---  as defined above. See User Guide for details.)
+
+
+%-------------------------------------------------------------------------
+%------------------ Driven Turbulence (Large-Eddy boxes) -----------------
+%-------------------------------------------------------------------------
+
+%-------------- Turbulent stirring parameters (TURB_DRIVING on)
+TurbDrive_ApproxRMSVturb            2     % driving strength: set to approximate rms turbulent velocity desired (code units)
+TurbDrive_MinWavelength             2.5     % minimum driving wavelength (code units): must be < MaxWavelength - setting to 1/4 box size
+TurbDrive_MaxWavelength             10.     % maximum driving wavelength (code units): must be <= BoxSize - setting to box size
+TurbDrive_SolenoidalFraction        1       % fraction in solenoidal modes (projection ~wt*curl + (1-wt)*div; default = 0.5) - setting to 1 = fully solenoidal
+TurbDrive_CoherenceTime             3       % coherence/correlation time of driving (code units; default = MaxWavelength / RMSVturb)
+TurbDrive_DrivingSpectrum           1       % driving spectrum: 0=equal power all modes, 1=strongly-peaked between Max/Min, 2=Kolmogorov, 3=Burgers (default = 2)
+TurbDrive_RandomNumberSeed          42      % random integer seed for stochastic driver, for reproducibility (default = 42)
+TurbDrive_TimeBetweenTurbUpdates    0.1    % time interval (code units) for driving updates (default = 0.01*coherence time)
+TurbDrive_TimeBetTurbSpectrum       0.1     % time interval (code units) for outputting power spectra, if TURB_DRIVING_SPECTRUMGRID is on

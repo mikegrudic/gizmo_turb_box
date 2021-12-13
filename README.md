@@ -27,4 +27,7 @@ You now have the `hdf5` initial condition file, the compiled `GIZMO` binary in t
 ./GIZMO params.txt 0
 ```
 
+Note that the provided `params.txt` is only an example and should be adjusted based on the requirements of your simulation.
+
+# Submitting an MPI job
 An example submission script for running the code with MPI on Frontera is given in `run.sh`; the exact command will vary depending on your machine.
