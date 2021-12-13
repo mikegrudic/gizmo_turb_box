@@ -27,7 +27,11 @@ You now have the `hdf5` initial condition file, the compiled `GIZMO` binary in t
 ./GIZMO params.txt 0
 ```
 
+The simulation will start running and output files and snapshots to the `output` directory. For details on GIZMO's outputs and related analysis tools see the [gizmo documentation](http://www.tapir.caltech.edu/~phopkins/Site/GIZMO_files/gizmo_documentation.html).
+
 Note that the provided `params.txt` is only an example and should be adjusted based on the requirements of your simulation. Notably, you can adjust the spectrum, amplitude, compressiveness, and coherence time of the turbulent driving to get the desired properties.
+
+
 
 # Submitting an MPI job
 An example submission script for running the code with MPI on Frontera is given in `run.sh`; the exact command will vary depending on your machine.
