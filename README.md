@@ -3,9 +3,15 @@ Setup scripts/files for running MHD turbulent box simulations with GIZMO
 
 # Walkthrough
 ## Compiling the code
-Get the public version of GIZMO:
+Get the public version of GIZMO and copy the example `Config.sh` included in this repo to the code directory:
 ```bash
-git clone https://bitbucket.org/gizmo_public
+git clone https://bitbucket.org/gizmo-public
+cp Config.sh gizmo-public
+```
+Now compile the code (note that you may need to go into `Makefile.systype` and uncomment the machine you are using):
+```bash
+cd gizmo-public
+make
 ```
 
 ## Generating the initial condition
@@ -13,5 +19,12 @@ MakeBox.py is a simple script designed to generate GIZMO snapshot file for a uni
 ```bash
 python MakeBox.py --M=1e4 --L=10 --B=10 --N=100000
 ```
-## Running the simulation
 
+## Running the simulation
+You now have the `hdf5` initial condition file, the compiled `GIZMO` binary in the `gizmo-public` directory, and an example parameter file `params.txt` included with this repo. To run a simulation on a single core (suitable only for very small runs, <1e5 cells), you would do
+
+```bash
+./GIZMO params.txt 0
+```
+
+An example submission script for running the code with MPI on Frontera is given in `run.sh`; the exact command will vary depending on your machine.
